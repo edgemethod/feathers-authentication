@@ -106,8 +106,12 @@ export function successfulLogin(options = {}) {
       res.cookie(options.cookie.name, res.data.token, cookieOptions);
     }
 
-    // Redirect to our success route
-    res.redirect(options.successRedirect);
+    // decode state object from original oauth link
+    var state = (req.query.state) ? JSON.parse(req.query.state) : undefined;
+    
+    // Redirect to our success route (conditionally based on whether an original subdomain was passed in sourceUrl)
+    if (state && state.sourceUrl) res.redirect(state.sourceUrl + options.successRedirect);
+    else res.redirect(options.successRedirect);
   };
 }
 
